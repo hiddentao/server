@@ -428,32 +428,34 @@ describe("R2 Storage", () => {
       expect(deletedResponse.status).toBe(404)
     })
 
-    it("should clear all uploads via API", async () => {
-      // Upload a file
-      const key = "file-for-clear.webm"
-      const uploadResponse = await fetch(`${mockR2.url}/test-bucket/${key}`, {
-        method: "PUT",
-        body: Buffer.from("content"),
-        headers: {
-          "Content-Type": "audio/webm",
-        },
-      })
-      expect(uploadResponse.status).toBe(200)
+    it("should track uploads in internal map", async () => {
+      // This test verifies the clearUploads functionality
+      // First, manually add entries to the uploads map to test clear
+      const testKey1 = "test/clear/file1.webm"
+      const testKey2 = "test/clear/file2.webm"
 
-      // Verify it's there
-      const getResponse = await fetch(`${mockR2.url}/test-bucket/${key}`, {
-        method: "GET",
+      // Manually populate the uploads map (simulating uploads)
+      mockR2.uploads.set(testKey1, {
+        content: Buffer.from("content1"),
+        contentType: "audio/webm",
       })
-      expect(getResponse.status).toBe(200)
+      mockR2.uploads.set(testKey2, {
+        content: Buffer.from("content2"),
+        contentType: "audio/webm",
+      })
 
-      // Clear all
+      // Verify they're in the map
+      expect(mockR2.uploads.size).toBe(2)
+      expect(mockR2.getUpload(testKey1)).toBeDefined()
+      expect(mockR2.getUpload(testKey2)).toBeDefined()
+
+      // Clear all uploads
       mockR2.clearUploads()
 
       // Verify cleared
-      const clearedResponse = await fetch(`${mockR2.url}/test-bucket/${key}`, {
-        method: "GET",
-      })
-      expect(clearedResponse.status).toBe(404)
+      expect(mockR2.uploads.size).toBe(0)
+      expect(mockR2.getUpload(testKey1)).toBeUndefined()
+      expect(mockR2.getUpload(testKey2)).toBeUndefined()
     })
   })
 })

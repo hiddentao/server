@@ -1,4 +1,3 @@
-import { clientConfig } from "../../shared/config/client"
 import { ONE_MINUTE, ONE_SECOND } from "../../shared/constants"
 import type { WebSocketMessage } from "../../shared/websocket/types"
 import {
@@ -35,24 +34,6 @@ const setupDefaultJobs = async (serverApp: ServerApp) => {
     },
     "0 0 * * * *",
   )
-
-  // Watch chain every 3 seconds (only when web3 is enabled)
-  if (clientConfig.WEB3_ENABLED) {
-    await scheduleCronJob(
-      serverApp,
-      {
-        tag: "cron:watchChain",
-        type: "watchChain",
-        userId: 0,
-        data: {},
-        autoRescheduleOnFailure: true,
-        autoRescheduleOnFailureDelay: 10 * ONE_SECOND,
-      },
-      "*/3 * * * * *",
-    )
-  } else {
-    logger.debug("Web3 disabled - skipping watchChain cron job")
-  }
 
   logger.debug("Default jobs scheduled")
 }

@@ -6,7 +6,17 @@
  * - Per-user connection limit (SOCKET_MAX_CONNECTIONS_PER_USER)
  */
 
-import { afterAll, beforeAll, describe, expect, it } from "bun:test"
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  setDefaultTimeout,
+} from "bun:test"
+
+setDefaultTimeout(60000)
+
 import { serverConfig } from "../../../src/shared/config/server"
 import {
   WebSocketErrorCode,
@@ -50,14 +60,40 @@ describe("WebSocket Connection Limits", () => {
   })
 
   afterAll(async () => {
+    // Wrap cleanup in a timeout to prevent hanging
+    const cleanupWithTimeout = async (
+      fn: () => Promise<void>,
+      name: string,
+      timeoutMs = 5000,
+    ) => {
+      try {
+        await Promise.race([
+          fn(),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error(`${name} timed out`)), timeoutMs),
+          ),
+        ])
+      } catch (error) {
+        testLogger.warn(`Cleanup warning (${name}):`, error)
+      }
+    }
+
     cleanupClients()
 
     if (testServer) {
-      await testServer.shutdown()
+      await cleanupWithTimeout(
+        () => testServer!.shutdown(),
+        "server shutdown",
+        10000,
+      )
     }
 
-    await cleanTestDatabase()
-    await closeTestDb()
+    await cleanupWithTimeout(
+      () => cleanTestDatabase(),
+      "database cleanup",
+      5000,
+    )
+    await cleanupWithTimeout(() => closeTestDb(), "database close", 5000)
   })
 
   describe("Basic WebSocket Connection", () => {

@@ -1,20 +1,13 @@
 /**
  * Settings database access layer
  *
- * Provides key-value storage for application settings,
- * including chain block tracking for the watchChain job.
+ * Provides key-value storage for application settings.
  */
 
 import { eq } from "drizzle-orm"
 import { settings } from "./schema"
 import type { DatabaseOrTransaction } from "./shared"
 import { withTransaction } from "./shared"
-
-const CHAIN_LAST_PROCESSED_BLOCK_PREFIX = "chain_last_processed_block"
-
-function getLastProcessedBlockKey(chainName: string): string {
-  return `${CHAIN_LAST_PROCESSED_BLOCK_PREFIX}_${chainName}`
-}
 
 /**
  * Get a setting value by key
@@ -66,34 +59,4 @@ export async function setSetting(
       })
     }
   })
-}
-
-/**
- * Get the last processed block number for a chain
- */
-export async function getLastProcessedBlock(
-  db: DatabaseOrTransaction,
-  chainName: string,
-): Promise<bigint | null> {
-  const key = getLastProcessedBlockKey(chainName)
-  const value = await getSetting(db, key)
-
-  if (value === null) {
-    return null
-  }
-
-  return BigInt(value)
-}
-
-/**
- * Set the last processed block number for a chain
- */
-export async function setLastProcessedBlock(
-  db: DatabaseOrTransaction,
-  chainName: string,
-  blockNumber: bigint,
-): Promise<void> {
-  const key = getLastProcessedBlockKey(chainName)
-  const value = blockNumber.toString()
-  await setSetting(db, key, value)
 }

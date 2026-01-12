@@ -406,10 +406,10 @@ FIREBASE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 | `tests/server/graphql/responses.test.ts` | Response queries with sorting | [x] 8 tests |
 | `tests/server/graphql/firebase-auth.test.ts` | Firebase phone auth flow | [x] 5 tests |
 | `tests/server/graphql/legal-content.test.ts` | Privacy/terms queries | [x] 6 tests |
-| `tests/server/graphql/pulse-stats.test.ts` | Pulse stats query | [ ] |
-| `tests/server/workers/generate-waveform.test.ts` | Waveform generation job | [ ] |
+| `tests/server/graphql/pulse-stats.test.ts` | Pulse stats query | [x] 5 tests |
+| `tests/server/workers/generate-waveform.test.ts` | Waveform generation job | [x] 11 tests |
 | `tests/server/routes/landing-page.test.ts` | Landing page and legal routes | [x] 8 tests |
-| `tests/server/lib/r2.test.ts` | R2 presigned URL generation | [ ] |
+| `tests/server/lib/r2.test.ts` | R2 presigned URL generation | [x] 24 tests |
 | `tests/helpers/posts.ts` | Post test data helpers | [x] (in tests/helpers/database.ts) |
 | `tests/helpers/profiles.ts` | Profile test data helpers | [x] (in tests/helpers/database.ts) |
 | `tests/helpers/mockR2.ts` | Mock R2 server for tests | [x] |
