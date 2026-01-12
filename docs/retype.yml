@@ -1,0 +1,23 @@
+input: .
+output: .retype
+url: https://docs.quickdapp.xyz
+branding:
+  title: QuickDapp
+  logo: static/logo.png
+links:
+- text: QuickDapp.xyz
+  icon: home
+  link: https://quickdapp.xyz
+- text: GitHub
+  icon: mark-github
+  link: https://github.com/QuickDapp/QuickDapp
+favicon: static/favicon.png
+editor:
+  enabled: true
+meta:
+  title: " | QuickDapp"
+footer:
+  copyright: "&copy; Copyright {{ year }} [QuickDapp](https://quickdapp.xyz). All rights reserved."
+  links:
+    - text: quickdapp.xyz
+      link: https://quickdapp.xyz

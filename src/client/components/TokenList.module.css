@@ -1,0 +1,11 @@
+@reference "../styles/globals.css";
+
+@layer components {
+  .tokenMeta {
+    @apply text-xs;
+
+    em {
+      @apply italic mr-2 text-slate-400;
+    }
+  }
+}

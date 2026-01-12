@@ -1,0 +1,61 @@
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+build
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+*.log
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# dotenv environment variable files
+.env.local
+.env.production
+.env.*.local
+
+# caches
+.eslintcache
+.cache
+cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+# Generated files
+generated/
+*.generated.*
+src/shared/abi/generated.ts
+src/shared/graphql/generated/
+src/server/static
+
+# Database files
+*.db
+*.sqlite
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Claude local
+CLAUDE.local.md
+v2
+chatfall

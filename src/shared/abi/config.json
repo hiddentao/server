@@ -1,0 +1,13 @@
+{
+  "Erc20": [
+    {
+      "glob": "./data/erc20abi.json"
+    }
+  ],
+  "FactoryContract": [
+    {
+      "glob": "../../../sample-contracts/out/ERC20Factory.sol/ERC20Factory.json",
+      "keyPath": "abi"
+    }
+  ]
+}
