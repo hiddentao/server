@@ -8,55 +8,70 @@ This is the backend server for Echo app, built on [QuickDapp](https://quickdapp.
 
 - **Node.js** v22.0.0 or higher
 - **Bun** v1.0.0 or higher
-- **PostgreSQL** 14+ running locally
+- **Docker** and **Docker Compose**
 - **Git**
 
 ## Quick Start
 
-### 1. Setup PostgreSQL Database
+### Option A: Full Docker Setup (Recommended)
 
-Create the development database:
+Run everything in Docker with HMR support:
 
 ```bash
-# Connect to PostgreSQL
-psql -U postgres
-
-# Create development database
-CREATE DATABASE echo_dev;
-\q
+docker compose up --build
 ```
 
-Update the database connection in `.env.local` if your PostgreSQL setup differs:
+This starts both PostgreSQL and the dev server. The application will be available at **http://localhost:5173**
 
-```env
-DATABASE_URL=postgresql://postgres:@localhost:5432/echo_dev
+To run in background:
+```bash
+docker compose up -d --build
+docker compose logs -f server  # follow server logs
 ```
 
-### 2. Install Dependencies
+### Option B: Local Development
+
+Run the server locally with Docker for PostgreSQL only:
+
+#### 1. Start Database
+
+```bash
+docker compose up -d postgres
+```
+
+**Dev database connection details:**
+- Host: `localhost`
+- Port: `55433`
+- User: `postgres`
+- Password: (none)
+- Database: `echo_dev`
+- Connection string: `postgresql://postgres@localhost:55433/echo_dev`
+
+#### 2. Install Dependencies
 
 ```bash
 bun install
 ```
 
-### 3. Setup Database Schema
+#### 3. Setup Database Schema
 
 ```bash
 bun run db push
 ```
 
-### 4. Start Development Server
+#### 4. Seed Database (Optional)
+
+```bash
+bun run db seed
+```
+
+#### 5. Start Development Server
 
 ```bash
 bun run dev
 ```
 
 The application will be available at **http://localhost:5173**
-
-To get help on available options:
-
-```bash
-bun run dev -h
-```
 
 
 ## Production
@@ -81,24 +96,7 @@ The production server will serve both the API and the built client application. 
 
 ## Testing
 
-### Setup Test Database
-
-Create the test database:
-
-```bash
-# Connect to PostgreSQL
-psql -U postgres
-
-# Create test database
-CREATE DATABASE echo_test;
-\q
-```
-
-Update the test database connection in `.env.test` if needed:
-
-```env
-DATABASE_URL=postgresql://postgres:@localhost:5432/echo_test
-```
+The test database (`echo_test`) is automatically created when you start the Docker Compose services.
 
 ### Run Tests
 
@@ -117,6 +115,27 @@ bun run test -h
 ```bash
 bun run test --pattern "blockchain"
 bun run test --test-file tests/integration/server.test.ts
+```
+
+## Docker Management
+
+```bash
+# Stop all services
+docker compose down
+
+# Stop only the database
+docker compose stop postgres
+
+# Reset database (removes all data)
+docker compose down -v && docker compose up -d --build
+
+# Rebuild server after dependency changes
+docker compose up -d --build server
+
+# View logs
+docker compose logs -f
+docker compose logs -f server
+docker compose logs -f postgres
 ```
 
 ## License

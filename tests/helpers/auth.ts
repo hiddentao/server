@@ -323,8 +323,6 @@ function createMockServerApp(): ServerApp {
     }) as any,
     workerManager: {} as any,
     socketManager: {} as any,
-    publicClient: {} as any,
-    walletClient: {} as any,
     createNotification: async (
       userId: number,
       notificationData: NotificationData,

@@ -1,7 +1,6 @@
 import type { NotificationData } from "@shared/notifications/types"
 import type { ISocketManager } from "@shared/websocket/socket-manager"
 import type { Elysia } from "elysia"
-import type { PublicClient, WalletClient } from "viem"
 import type { Database } from "./db/shared"
 import type { Logger, startSpan } from "./lib/logger"
 import type { WorkerManager } from "./workers"
@@ -25,10 +24,6 @@ export type ServerApp = {
   workerManager: WorkerManager
   /** WebSocket manager for real-time communication */
   socketManager: ISocketManager
-  /** Public blockchain client for reading (only available when WEB3_ENABLED=true) */
-  publicClient?: PublicClient
-  /** Wallet client for transactions (only available when WEB3_ENABLED=true) */
-  walletClient?: WalletClient
   /** Create a notification for a user and send via WebSocket */
   createNotification: (
     userId: number,

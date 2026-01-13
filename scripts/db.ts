@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun"
+import { seedDatabase } from "../src/server/db/seed"
 import {
   createScriptRunner,
   type ScriptOptions,
@@ -91,6 +92,25 @@ async function pushHandler(
   }
 }
 
+async function seedHandler(
+  _options: DbOptions,
+  config: { rootFolder: string; env: string },
+) {
+  if (config.env !== "development") {
+    console.error("❌ Seeding is only allowed in development environment")
+    process.exit(1)
+  }
+
+  console.log("🌱 Seeding development database...")
+
+  try {
+    await seedDatabase()
+  } catch (error) {
+    console.error("❌ Failed to seed database:", error)
+    process.exit(1)
+  }
+}
+
 // Define subcommands
 const subcommands: SubcommandConfig[] = [
   {
@@ -108,6 +128,11 @@ const subcommands: SubcommandConfig[] = [
     description: "Push schema changes to database",
     handler: pushHandler,
     options: (cmd) => cmd.option("-f, --force", "force the operation"),
+  },
+  {
+    name: "seed",
+    description: "Seed the development database with sample data",
+    handler: seedHandler,
   },
 ]
 

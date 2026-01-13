@@ -1,0 +1,7 @@
+FROM oven/bun:latest
+
+WORKDIR /app
+
+EXPOSE 3000 5173
+
+CMD ["sh", "-c", "bun install && bun run dev"]
