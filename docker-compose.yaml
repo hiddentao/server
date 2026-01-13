@@ -27,6 +27,7 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=postgresql://postgres@postgres:5432/echo_dev
+      - SEED_CLEAR=${SEED_CLEAR:-}
     depends_on:
       postgres:
         condition: service_healthy

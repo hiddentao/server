@@ -129,6 +129,9 @@ docker compose stop postgres
 # Reset database (removes all data)
 docker compose down -v && docker compose up -d --build
 
+# Clear and re-seed database
+SEED_CLEAR=true docker compose up --build
+
 # Rebuild server after dependency changes
 docker compose up -d --build server
 

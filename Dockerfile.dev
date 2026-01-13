@@ -4,4 +4,4 @@ WORKDIR /app
 
 EXPOSE 3000 5173
 
-CMD ["sh", "-c", "bun install && bun run dev"]
+CMD ["sh", "-c", "bun install && bun run db push --force && if [ \"$SEED_CLEAR\" = \"true\" ]; then bun run db seed --clear; else bun run db seed; fi && bun run dev"]

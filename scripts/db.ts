@@ -10,6 +10,7 @@ import {
 
 interface DbOptions extends ScriptOptions {
   force?: boolean
+  clear?: boolean
 }
 
 export async function runDrizzleCommand(args: string[]): Promise<void> {
@@ -93,7 +94,7 @@ async function pushHandler(
 }
 
 async function seedHandler(
-  _options: DbOptions,
+  options: DbOptions,
   config: { rootFolder: string; env: string },
 ) {
   if (config.env !== "development") {
@@ -104,7 +105,7 @@ async function seedHandler(
   console.log("🌱 Seeding development database...")
 
   try {
-    await seedDatabase()
+    await seedDatabase({ clear: options.clear })
   } catch (error) {
     console.error("❌ Failed to seed database:", error)
     process.exit(1)
@@ -133,6 +134,8 @@ const subcommands: SubcommandConfig[] = [
     name: "seed",
     description: "Seed the development database with sample data",
     handler: seedHandler,
+    options: (cmd) =>
+      cmd.option("-c, --clear", "clear existing data before seeding"),
   },
 ]
 

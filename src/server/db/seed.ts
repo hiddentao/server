@@ -3,12 +3,31 @@ import { eq } from "drizzle-orm"
 import { dbManager, schema } from "./connection"
 import type { NewBookmark, NewPost, NewUser, NewUserProfile } from "./schema"
 
-export async function seedDatabase(): Promise<void> {
+export async function seedDatabase(
+  options: { clear?: boolean } = {},
+): Promise<void> {
   const db = await dbManager.connect({
     maxConnections: 1,
     idleTimeout: 0,
     connectTimeout: 10,
   })
+
+  const existingUsers = await db.select().from(schema.users).limit(1)
+
+  if (existingUsers.length > 0) {
+    if (options.clear) {
+      console.log("Clearing existing data...")
+      await db.delete(schema.bookmarks)
+      await db.delete(schema.posts)
+      await db.delete(schema.userAuth)
+      await db.delete(schema.userProfiles)
+      await db.delete(schema.users)
+    } else {
+      console.log("Database already seeded, skipping...")
+      await dbManager.disconnect()
+      return
+    }
+  }
 
   const CITY = "singapore"
   const NUM_USERS = 10
