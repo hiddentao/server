@@ -72,18 +72,6 @@ WORKER_LOG_LEVEL=debug
     }
     console.log("")
 
-    // Build contracts
-    console.log("🔨 Building contracts...")
-    try {
-      await $`cd tests/helpers/contracts && forge build`
-      console.log("✅ Contracts built successfully")
-    } catch (error) {
-      console.error("❌ Failed to build contracts:", error)
-      cleanup()
-      process.exit(1)
-    }
-    console.log("")
-
     // Get all test files for isolation mode
     const testDir = "tests/"
     const glob = new Glob("**/*.test.ts")
