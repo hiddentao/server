@@ -13,6 +13,13 @@ This is the backend server for Echo app, built on [QuickDapp](https://quickdapp.
 
 ## Quick Start
 
+Before doing anything you will need to setup the local environment file - `.env.local`:
+
+```
+
+```
+
+
 ### Option A: Full Docker Setup (Recommended)
 
 Run everything in Docker with HMR support:
