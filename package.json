@@ -66,6 +66,7 @@
     "arctic": "^3.7.0",
     "clsx": "^2.1.1",
     "commander": "^14.0.0",
+    "date-fns": "^4.1.0",
     "cron-schedule": "^5.0.4",
     "dotenv": "^17.2.1",
     "drizzle-kit": "^0.31.4",
