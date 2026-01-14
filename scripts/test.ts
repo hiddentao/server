@@ -39,35 +39,53 @@ WORKER_LOG_LEVEL=debug
     console.log("")
   }
 
-  // Cleanup function to remove temporary files
-  const cleanup = () => {
+  // Cleanup function to remove temporary files and stop database
+  const cleanup = async () => {
     if (createdTempEnvFile && existsSync(envTestLocalPath)) {
       console.log("🧹 Cleaning up temporary debug logging configuration...")
       unlinkSync(envTestLocalPath)
       console.log("✅ Temporary files cleaned up")
     }
+    // Stop test database container
+    console.log("🐘 Stopping test database...")
+    try {
+      await $`docker compose -f docker-compose.test.yaml down`.quiet()
+      console.log("✅ Test database stopped")
+    } catch {
+      // Ignore errors when stopping database
+    }
   }
 
   // Set up cleanup on exit
-  process.on("exit", cleanup)
-  process.on("SIGINT", () => {
-    cleanup()
+  process.on("SIGINT", async () => {
+    await cleanup()
     process.exit(0)
   })
-  process.on("SIGTERM", () => {
-    cleanup()
+  process.on("SIGTERM", async () => {
+    await cleanup()
     process.exit(0)
   })
 
   try {
-    // Set up test database first
-    console.log("📦 Setting up test database...")
+    // Start test database container
+    console.log("🐘 Starting test database...")
+    try {
+      await $`docker compose -f docker-compose.test.yaml up -d --wait`
+      console.log("✅ Test database started")
+    } catch (error) {
+      console.error("❌ Failed to start test database:", error)
+      process.exit(1)
+    }
+    console.log("")
+
+    // Set up test database schema
+    console.log("📦 Setting up test database schema...")
     try {
       await $`bun run db push --force`
       console.log("✅ Test database schema updated successfully")
     } catch (error) {
       console.error("❌ Failed to set up test database:", error)
-      cleanup()
+      await cleanup()
       process.exit(1)
     }
     console.log("")
@@ -90,7 +108,7 @@ WORKER_LOG_LEVEL=debug
 
     if (filesToRun.length === 0) {
       console.log("❌ No test files found matching criteria")
-      cleanup()
+      await cleanup()
       process.exit(1)
     }
 
@@ -164,16 +182,16 @@ WORKER_LOG_LEVEL=debug
     if (totalFailed > 0) {
       console.log("")
       console.log("❌ Some tests failed!")
-      cleanup()
+      await cleanup()
       process.exit(1)
     } else {
       console.log("")
       console.log("✅ All tests passed!")
-      cleanup()
+      await cleanup()
     }
   } catch (error) {
     console.error("❌ Test execution failed:", error)
-    cleanup()
+    await cleanup()
     process.exit(1)
   }
 }

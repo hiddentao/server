@@ -1,14 +1,15 @@
-import { afterAll, beforeAll, describe, expect, it } from "bun:test"
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test"
 import { createTestJWT } from "../../helpers/auth"
+import {
+  createTestUserWithProfile,
+  setupTestDatabase,
+} from "../../helpers/database"
 import { testLogger } from "../../helpers/logger"
-// Import global test setup
-import "../../setup"
 import {
   makeRequest,
   startTestServer,
   waitForServer,
 } from "../../helpers/server"
-// Import global test setup
 import "../../setup"
 
 describe("GraphQL Queries", () => {
@@ -16,13 +17,19 @@ describe("GraphQL Queries", () => {
   let authToken: string
 
   beforeAll(async () => {
-    // Start test server
     testServer = await startTestServer()
     await waitForServer(testServer.url)
+  })
 
-    // Create test auth token using helper
-    const testWallet = "0x1234567890123456789012345678901234567890"
-    authToken = await createTestJWT(testWallet)
+  beforeEach(async () => {
+    await setupTestDatabase()
+
+    const { user } = await createTestUserWithProfile({
+      username: "testuser",
+      web3Wallet: "0x1234567890123456789012345678901234567890",
+    })
+
+    authToken = await createTestJWT(user.id)
   })
 
   afterAll(async () => {

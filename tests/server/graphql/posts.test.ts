@@ -32,10 +32,7 @@ describe("GraphQL Posts", () => {
     })
     testUserId = user.id
 
-    authToken = await createTestJWT(
-      "0x1234567890123456789012345678901234567890",
-      { extraClaims: { userId: user.id } },
-    )
+    authToken = await createTestJWT(user.id)
   })
 
   afterAll(async () => {

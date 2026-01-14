@@ -33,10 +33,7 @@ describe("GraphQL Profiles", () => {
     })
     testUserId = user.id
 
-    authToken = await createTestJWT(
-      "0x1234567890123456789012345678901234567890",
-      { extraClaims: { userId: user.id } },
-    )
+    authToken = await createTestJWT(user.id)
   })
 
   afterAll(async () => {
@@ -112,10 +109,7 @@ describe("GraphQL Profiles", () => {
         authIdentifier: "+6598765432",
       })
 
-      const otherToken = await createTestJWT(
-        "0xaabbccdd00000000000000000000000000000000",
-        { extraClaims: { userId: otherUser.id } },
-      )
+      const otherToken = await createTestJWT(otherUser.id)
 
       const response = await makeRequest(`${testServer.url}/graphql`, {
         method: "POST",

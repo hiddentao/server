@@ -5,24 +5,29 @@
  * operation identification, and runtime enforcement of authentication requirements.
  */
 
-import { afterAll, beforeAll, describe, expect, it } from "bun:test"
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+} from "bun:test"
 import { AuthDirectiveHelper } from "../../../src/shared/graphql/auth-extractor"
 import { typeDefs } from "../../../src/shared/graphql/schema"
 import {
+  createEmailAuthenticatedTestUser,
+  createExpiredJWT,
   createGraphQLRequest,
-  createSimpleAuthenticatedTestUser,
-  createTestJWT,
-  generateTestWallet,
 } from "../../helpers/auth"
+import { cleanTestDatabase, setupTestDatabase } from "../../helpers/database"
 import { testLogger } from "../../helpers/logger"
-// Import global test setup
-import "../../setup"
 import {
   makeRequest,
   startTestServer,
   waitForServer,
 } from "../../helpers/server"
-// Import global test setup
 import "../../setup"
 
 describe("Auth Directive Tests", () => {
@@ -38,6 +43,14 @@ describe("Auth Directive Tests", () => {
     testServer = await startTestServer()
     await waitForServer(testServer.url)
     authHelper = new AuthDirectiveHelper(typeDefs)
+  })
+
+  beforeEach(async () => {
+    await setupTestDatabase()
+  })
+
+  afterEach(async () => {
+    await cleanTestDatabase()
   })
 
   afterAll(async () => {
@@ -138,7 +151,9 @@ describe("Auth Directive Tests", () => {
       })
 
       it("should allow getMyNotifications with valid auth", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -182,7 +197,9 @@ describe("Auth Directive Tests", () => {
       })
 
       it("should allow getMyUnreadNotificationsCount with valid auth", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -222,7 +239,9 @@ describe("Auth Directive Tests", () => {
       })
 
       it("should allow markNotificationAsRead with valid auth", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -265,7 +284,9 @@ describe("Auth Directive Tests", () => {
       })
 
       it("should allow markAllNotificationsAsRead with valid auth", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -334,7 +355,9 @@ describe("Auth Directive Tests", () => {
       })
 
       it("should allow mixed queries when properly authenticated", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -362,7 +385,9 @@ describe("Auth Directive Tests", () => {
       })
 
       it("should handle multiple auth-required fields in single query", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -394,10 +419,7 @@ describe("Auth Directive Tests", () => {
 
     describe("Invalid Token Handling", () => {
       it("should reject expired tokens for auth operations", async () => {
-        const wallet = generateTestWallet()
-        const expiredToken = await createTestJWT(wallet.address, {
-          expiresIn: "-1h",
-        })
+        const expiredToken = await createExpiredJWT(1)
 
         const response = await makeRequest(`${testServer.url}/graphql`, {
           ...createGraphQLRequest(
@@ -507,7 +529,9 @@ describe("Auth Directive Tests", () => {
 
     describe("Context Propagation", () => {
       it("should provide user context to resolvers", async () => {
-        const authenticatedUser = await createSimpleAuthenticatedTestUser()
+        const authenticatedUser = await createEmailAuthenticatedTestUser(
+          testServer.serverApp,
+        )
 
         // This test verifies that the user context is properly passed to resolvers
         // We can't directly test the resolver context, but we can verify that

@@ -42,10 +42,7 @@ describe("GraphQL Pulse Stats", () => {
       phoneNumber: "+15551234567",
     })
 
-    authToken = await createTestJWT(
-      "0x1234567890123456789012345678901234567890",
-      { extraClaims: { userId: testUserId } },
-    )
+    authToken = await createTestJWT(testUserId)
 
     // Insert pulse stats data for testing
     const { dbManager, schema } = await import("@server/db/connection")
