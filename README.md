@@ -13,12 +13,21 @@ This is the backend server for Echo app, built on [QuickDapp](https://quickdapp.
 
 ## Quick Start
 
-Before doing anything you will need to setup the local environment file - `.env.local`:
+### Pre-requisites
+
+Before doing anything you will need to setup the local env.
 
 ```
-
+bun install
 ```
 
+Now create `.env.keys` and put the dotenvx private key (ask Ram for this) inside it.
+
+Now run:
+
+```
+bun run dotenvx decrypt -f .env.development.enc --stdout > .env.development
+```
 
 ### Option A: Full Docker Setup (Recommended)
 

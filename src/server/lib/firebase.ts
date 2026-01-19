@@ -1,3 +1,4 @@
+import type { ServiceAccount } from "firebase-admin/app"
 import { cert, getApps, initializeApp } from "firebase-admin/app"
 import { getAuth } from "firebase-admin/auth"
 import { serverConfig } from "../../shared/config/server"
@@ -46,7 +47,8 @@ function initializeFirebase(): void {
     throw new Error("Firebase is not configured")
   }
 
-  const serviceAccount = JSON.parse(serverConfig.FIREBASE_SERVICE_ACCOUNT_KEY!)
+  const serviceAccount =
+    serverConfig.FIREBASE_SERVICE_ACCOUNT_KEY! as ServiceAccount
 
   initializeApp({
     credential: cert(serviceAccount),

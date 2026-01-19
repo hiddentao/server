@@ -1,6 +1,19 @@
 import env from "env-var"
 import { type ClientConfig, clientConfig } from "./client"
 
+export interface FirebaseServiceAccountKey {
+  type: string
+  project_id: string
+  private_key_id: string
+  private_key: string
+  client_email: string
+  client_id: string
+  auth_uri: string
+  token_uri: string
+  auth_provider_x509_cert_url: string
+  client_x509_cert_url: string
+}
+
 // Server-only configuration (extends client config)
 export interface ServerConfig extends ClientConfig {
   // Server settings
@@ -70,7 +83,18 @@ export interface ServerConfig extends ClientConfig {
 
   // Firebase configuration
   FIREBASE_PROJECT_ID?: string
-  FIREBASE_SERVICE_ACCOUNT_KEY?: string
+  FIREBASE_SERVICE_ACCOUNT_KEY?: FirebaseServiceAccountKey
+}
+
+export function parseFirebaseServiceAccountKey(
+  value: string | undefined,
+): FirebaseServiceAccountKey | undefined {
+  if (!value) return undefined
+  try {
+    return JSON.parse(value) as FirebaseServiceAccountKey
+  } catch {
+    throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY must be valid JSON")
+  }
 }
 
 // Helper to load web3-specific server config
@@ -203,9 +227,9 @@ export const serverConfig: ServerConfig = {
 
   // Firebase configuration
   FIREBASE_PROJECT_ID: env.get("FIREBASE_PROJECT_ID").asString(),
-  FIREBASE_SERVICE_ACCOUNT_KEY: env
-    .get("FIREBASE_SERVICE_ACCOUNT_KEY")
-    .asString(),
+  FIREBASE_SERVICE_ACCOUNT_KEY: parseFirebaseServiceAccountKey(
+    env.get("FIREBASE_SERVICE_ACCOUNT_KEY").asString(),
+  ),
 }
 
 // Helper to check if a config value is empty
