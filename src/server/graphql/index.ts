@@ -32,9 +32,7 @@ export const createGraphQLHandler = (serverApp: ServerApp) => {
   const yoga = createYoga({
     schema,
     cors: false, // Disable Yoga's CORS since Elysia handles it
-    graphiql:
-      serverConfig.NODE_ENV === "development" ||
-      serverConfig.NODE_ENV === "test",
+    graphiql: true,
     maskedErrors: serverConfig.NODE_ENV === "production",
     plugins: [
       {
