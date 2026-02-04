@@ -77,7 +77,9 @@ describe("Server Configuration Validation", () => {
 
     it("should parse valid JSON service account key", () => {
       const jsonString = JSON.stringify(validServiceAccountKey)
-      const result = parseFirebaseServiceAccountKey(jsonString)
+      const result = parseFirebaseServiceAccountKey(
+        Buffer.from(jsonString).toString("base64"),
+      )
 
       expect(result).toBeDefined()
       expect(result?.project_id).toBe("test-project")
@@ -89,7 +91,9 @@ describe("Server Configuration Validation", () => {
 
     it("should parse JSON with all required fields", () => {
       const jsonString = JSON.stringify(validServiceAccountKey)
-      const result = parseFirebaseServiceAccountKey(jsonString)
+      const result = parseFirebaseServiceAccountKey(
+        Buffer.from(jsonString).toString("base64"),
+      )
 
       expect(result).toBeDefined()
       expect(result?.type).toBe("service_account")
@@ -109,14 +113,18 @@ describe("Server Configuration Validation", () => {
     })
 
     it("should throw error for invalid JSON", () => {
-      expect(() => parseFirebaseServiceAccountKey("not valid json")).toThrow(
-        "FIREBASE_SERVICE_ACCOUNT_KEY must be valid JSON",
-      )
+      expect(() =>
+        parseFirebaseServiceAccountKey(
+          Buffer.from("not valid json").toString("base64"),
+        ),
+      ).toThrow("FIREBASE_SERVICE_ACCOUNT_KEY must be valid JSON")
     })
 
     it("should throw error for malformed JSON", () => {
       expect(() =>
-        parseFirebaseServiceAccountKey('{"project_id": "test",'),
+        parseFirebaseServiceAccountKey(
+          Buffer.from('{"project_id": "test",').toString("base64"),
+        ),
       ).toThrow("FIREBASE_SERVICE_ACCOUNT_KEY must be valid JSON")
     })
 
@@ -127,7 +135,9 @@ describe("Server Configuration Validation", () => {
           "-----BEGIN PRIVATE KEY-----\\nMIIkey\\n-----END PRIVATE KEY-----\\n",
       }
       const jsonString = JSON.stringify(keyWithNewlines)
-      const result = parseFirebaseServiceAccountKey(jsonString)
+      const result = parseFirebaseServiceAccountKey(
+        Buffer.from(jsonString).toString("base64"),
+      )
 
       expect(result).toBeDefined()
       expect(result?.private_key).toContain("\\n")
@@ -139,7 +149,9 @@ describe("Server Configuration Validation", () => {
         project_id: "test-project-\u00e9\u00e8",
       }
       const jsonString = JSON.stringify(keyWithUnicode)
-      const result = parseFirebaseServiceAccountKey(jsonString)
+      const result = parseFirebaseServiceAccountKey(
+        Buffer.from(jsonString).toString("base64"),
+      )
 
       expect(result).toBeDefined()
       expect(result?.project_id).toBe("test-project-\u00e9\u00e8")
@@ -148,7 +160,9 @@ describe("Server Configuration Validation", () => {
     it("should parse minified JSON", () => {
       const minified =
         '{"type":"service_account","project_id":"test","private_key_id":"key","private_key":"key","client_email":"email","client_id":"id","auth_uri":"uri","token_uri":"uri","auth_provider_x509_cert_url":"url","client_x509_cert_url":"url"}'
-      const result = parseFirebaseServiceAccountKey(minified)
+      const result = parseFirebaseServiceAccountKey(
+        Buffer.from(minified).toString("base64"),
+      )
 
       expect(result).toBeDefined()
       expect(result?.type).toBe("service_account")
