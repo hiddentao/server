@@ -91,8 +91,11 @@ export function parseFirebaseServiceAccountKey(
 ): FirebaseServiceAccountKey | undefined {
   if (!value) return undefined
   try {
-    const json = Buffer.from(value, "base64").toString("utf-8")
-    return JSON.parse(json) as FirebaseServiceAccountKey
+    const parsed = JSON.parse(value) as FirebaseServiceAccountKey
+    if (parsed.private_key) {
+      parsed.private_key = parsed.private_key.replace(/\\n/g, "\n")
+    }
+    return parsed
   } catch {
     throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY must be valid JSON")
   }
